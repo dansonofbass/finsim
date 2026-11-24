@@ -29,10 +29,22 @@ final class FinSimClient {
   }
 
   private URI resolveUri(String path) {
-    if (path.startsWith("/")) {
-      return URI.create(baseUrl).resolve(URI.create(path.replace(" ", "%20")));
+    URI baseUri = URI.create(baseUrl);
+    if (baseUri.getRawQuery() != null || baseUri.getRawFragment() != null) {
+      throw new IllegalArgumentException("FinSim base URL must not contain a query or fragment");
     }
-    return URI.create(baseUrl + "/" + path.replace(" ", "%20"));
+
+    String normalizedBaseUrl = baseUrl;
+    while (normalizedBaseUrl.endsWith("/")) {
+      normalizedBaseUrl = normalizedBaseUrl.substring(0, normalizedBaseUrl.length() - 1);
+    }
+
+    String normalizedPath = path.replace(" ", "%20");
+    while (normalizedPath.startsWith("/")) {
+      normalizedPath = normalizedPath.substring(1);
+    }
+
+    return URI.create(normalizedBaseUrl + "/" + normalizedPath);
   }
 
   Response get(String path) throws IOException, InterruptedException {
