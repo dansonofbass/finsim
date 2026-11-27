@@ -193,6 +193,9 @@ class FinSimCliTest {
     assertThat(run("institutions", "--finsim", url, "--id", "bank-a").exit()).isZero();
     assertThat(lastPath.get()).isEqualTo("/api/v1/institutions/bank-a");
 
+    assertThat(run("networks", "--finsim", url).exit()).isZero();
+    assertThat(lastPath.get()).isEqualTo("/api/v1/networks");
+
     assertThat(run("networks", "--finsim", url, "--id", "sandbox").exit()).isZero();
     assertThat(lastPath.get()).isEqualTo("/api/v1/networks/sandbox");
 
@@ -201,6 +204,32 @@ class FinSimCliTest {
 
     assertThat(run("directory", "--finsim", url, "--network", "sandbox").exit()).isZero();
     assertThat(lastPath.get()).isEqualTo("/api/v1/networks/sandbox/directory");
+  }
+
+  @Test
+  void networksDirectoryRequiresIdBeforeSendingRequests() throws Exception {
+    String url = stubFinSim(200, "[]");
+
+    Result result = run("networks", "--finsim", url, "--directory");
+
+    assertThat(result.exit()).isEqualTo(CommandLine.ExitCode.USAGE);
+    assertThat(result.err()).contains("--directory requires a non-blank --id");
+    assertThat(result.out()).isEmpty();
+    assertThat(lastPath.get()).isNull();
+  }
+
+  @Test
+  void networksDirectoryRejectsBlankIdBeforeSendingRequests() throws Exception {
+    String url = stubFinSim(200, "[]");
+
+    for (String id : List.of("", " ", "\t")) {
+      Result result = run("networks", "--finsim", url, "--directory", "--id", id);
+
+      assertThat(result.exit()).isEqualTo(CommandLine.ExitCode.USAGE);
+      assertThat(result.err()).contains("--directory requires a non-blank --id");
+      assertThat(result.out()).isEmpty();
+      assertThat(lastPath.get()).isNull();
+    }
   }
 
   @Test

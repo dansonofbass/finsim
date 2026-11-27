@@ -200,7 +200,10 @@ public class FinSimCli implements Runnable {
 
     @Override
     FinSimClient.Response execute(FinSimClient client) throws IOException, InterruptedException {
-      if (id != null && directory) {
+      if (directory) {
+        if (id == null || id.isBlank()) {
+          throw new IllegalArgumentException("--directory requires a non-blank --id.");
+        }
         return client.get("/api/v1/networks/" + id + "/directory");
       }
       return client.get(id == null ? "/api/v1/networks" : "/api/v1/networks/" + id);
