@@ -22,10 +22,8 @@
     }
 
     # OpenAPI and Swagger UI documentation
-    handle /swagger-ui/* {
-        reverse_proxy finsim-api:8080
-    }
-    handle /v3/api-docs* {
+    @swagger path /swagger-ui* /v3/api-docs*
+    handle @swagger {
         reverse_proxy finsim-api:8080
     }
 

@@ -184,6 +184,15 @@ Verify the deployment from your local machine:
    ```
    Expected response: `HTTP/2 200` serving the Vite/React Simulation Cockpit (`text/html`), connected in **Live API** mode via same-origin `/api/*` and `/actuator/health`.
 
+   Check the API documentation separately:
+   ```bash
+   curl -i https://<your-domain>/swagger-ui.html
+   curl -i https://<your-domain>/swagger-ui/index.html
+   curl -i https://<your-domain>/v3/api-docs
+   curl -i https://<your-domain>/v3/api-docs/swagger-config
+   ```
+   Expect a redirect from `/swagger-ui.html` to `/swagger-ui/index.html`, Swagger UI HTML at the destination, and JSON from both OpenAPI endpoints. Documentation requests must reach the API, rather than return the Cockpit HTML fallback.
+
 2. **Health Check:**
    ```bash
    curl -i https://<your-domain>/actuator/health
